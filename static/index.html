@@ -9,27 +9,30 @@
 <script>
 window.onload = function () {
 //console.log(chartData);
-  var colors = Object.keys(chartData);
+  var embeddings = Object.keys(chartData);
+  var embedBy = embeddings[0]
+  var colors = Object.keys(chartData[embedBy]);
   var colorBy = colors[0];
-  var shapes = Object.keys(chartData[colorBy]);
+  var shapes = Object.keys(chartData[embedBy][colorBy]);
   var shapeBy = shapes[0];
 
-  var updateColorBy = function(newColorBy) {
-    colorBy = newColorBy;
-    updateChart();
-  }
-
-  var updateShapeBy = function(newShapeBy) {
-    shapeBy = newShapeBy;
-    updateChart();
-  }
-
+  var $selectembeddings = $("#selectembeddings")
   var $selectcolor = $("#selectcolor")
   var $selectshape = $("#selectshape")
 
   var updateChart = function() {
+    $selectembeddings.empty();
     $selectcolor.empty();
     $selectshape.empty();
+    for (var i in embeddings) {
+      var color = embeddings[i];
+      var tag = "<option value=\"" + color + "\" ";
+      if (color == embedBy) {
+        tag += "selected";
+      }
+      tag += ">" + color + "</option>";
+      $selectembeddings.append($(tag));
+    }
     for (var i in colors) {
       var color = colors[i];
       var tag = "<option value=\"" + color + "\" ";
@@ -37,24 +40,26 @@ window.onload = function () {
         tag += "selected";
       }
       tag += ">" + color + "</option>";
-      console.log(tag);
       $selectcolor.append($(tag));
     }
     for (var i in shapes) {
       var color = shapes[i];
       var tag = "<option value=\"" + color + "\" ";
-      if (color == colorBy) {
+      if (color == shapeBy) {
         tag += "selected";
       }
       tag += ">" + color + "</option>";
-      console.log(tag);
       $selectshape.append($(tag));
     }
-    var chart = new CanvasJS.Chart("chartContainer", chartData[colorBy][shapeBy]);
+    var chart = new CanvasJS.Chart("chartContainer", chartData[embedBy][colorBy][shapeBy]);
     chart.render();
   }
 
   updateChart();
+  $selectembeddings.change(function(e) {
+    embedBy = e.target.value;
+    updateChart();
+  });
   $selectcolor.change(function(e) {
     colorBy = e.target.value;
     updateChart();
@@ -69,6 +74,7 @@ window.onload = function () {
 <body>
   <div id="chartContainer" style="width: 100%; height:800px;"></div>
   <div id="chartOptions">
+    <span>Embeddings: <select id="selectembeddings"></select></span>
     <span>Color by: <select id="selectcolor"></select></span>
     <span>Shape represents: <select id="selectshape"></select></span>
   </div>
