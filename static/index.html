@@ -1,20 +1,77 @@
 <!DOCTYPE HTML>
 <html>
 <head>  
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
 <script type="text/javascript" src="/data.js"></script>
 <script>
 window.onload = function () {
-
 //console.log(chartData);
-var chart = new CanvasJS.Chart("chartContainer", chartData);
-chart.render();
+  var colors = Object.keys(chartData);
+  var colorBy = colors[0];
+  var shapes = Object.keys(chartData[colorBy]);
+  var shapeBy = shapes[0];
 
-}
+  var updateColorBy = function(newColorBy) {
+    colorBy = newColorBy;
+    updateChart();
+  }
+
+  var updateShapeBy = function(newShapeBy) {
+    shapeBy = newShapeBy;
+    updateChart();
+  }
+
+  var $selectcolor = $("#selectcolor")
+  var $selectshape = $("#selectshape")
+
+  var updateChart = function() {
+    $selectcolor.empty();
+    $selectshape.empty();
+    for (var i in colors) {
+      var color = colors[i];
+      var tag = "<option value=\"" + color + "\" ";
+      if (color == colorBy) {
+        tag += "selected";
+      }
+      tag += ">" + color + "</option>";
+      console.log(tag);
+      $selectcolor.append($(tag));
+    }
+    for (var i in shapes) {
+      var color = shapes[i];
+      var tag = "<option value=\"" + color + "\" ";
+      if (color == colorBy) {
+        tag += "selected";
+      }
+      tag += ">" + color + "</option>";
+      console.log(tag);
+      $selectshape.append($(tag));
+    }
+    var chart = new CanvasJS.Chart("chartContainer", chartData[colorBy][shapeBy]);
+    chart.render();
+  }
+
+  updateChart();
+  $selectcolor.change(function(e) {
+    colorBy = e.target.value;
+    updateChart();
+  });
+  $selectshape.change(function(e) {
+    shapeBy = e.target.value;
+    updateChart();
+  });
+};
 </script>
 </head>
 <body>
-<div id="chartContainer" style="height: 100%; width: 100%;">
-<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-</div>
+  <div id="chartContainer" style="width: 100%; height:800px;"></div>
+  <div id="chartOptions">
+    <span>Color by: <select id="selectcolor"></select></span>
+    <span>Shape represents: <select id="selectshape"></select></span>
+  </div>
+  <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 </body>
 </html>
